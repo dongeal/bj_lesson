@@ -4,50 +4,35 @@ from collections import deque
 # input = sys.stdin.readline
 
 def byunwhan(si,sj):
-    for i in range(3):
-        for j in range(3):
-            if A[si+i][sj+j] == 0:
-                A[si+i][sj+j] = 1
-            else:
-                A[si+i][sj+j] = 0
+    for i in range(si,si+3):
+        for j in range(sj, sj+3):
+            A[i][j] = 1 - A[i][j]
     return
-def dfs(n,si,sj):
-    global cnt,ans
-    
-    ci, cj = si, sj
-    byunwhan(ci,cj)
-    if A == B:
-        cnt = n
-        return 
-    for di,dj in ((-1,0),(1,0),(0,-1),(0,1)) :
-        ni , nj  = ci +di, cj+dj
-        if 0 <= ni < N-2 and 0 <= nj < M-2 and v[ni][nj] == 0:
-            v[ni][nj] = 1
-            n +=1
-            dfs(n,ni,nj) 
-            n -=1
-            v[ni][nj] = 0
 
-    cnt = -1
-    return
 N, M = map(int, input().split())
 A=[]
 B=[]
-ans = 1000000
-cnt = 0
 for _ in range(N):
     A.append(list(map(int, input())))
 for _ in range(N):
     B.append(list(map(int, input())))
 
+cnt = 0
 for i in range(N-2):
     for j in range(M-2):
-        v=[[0]*M for _ in range(N)]
-        v[i][j] = 1
-        dfs(1,i,j)
-        print(cnt)
-        ans = min(ans, cnt)
-print(ans)
+        if A[i][j] != B[i][j]:
+            byunwhan(i,j)
+            cnt += 1
+flag = 0
+for i in range(N):
+    for j in range(M):
+        if A[i][j] != B[i][j]:
+            flag = 1
+            break
+if flag == 1:
+    print(-1)
+else:
+    print(cnt)
 
 # p =[0]*N
 # p= list(map(int,input().split()))
