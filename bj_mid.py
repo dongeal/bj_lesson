@@ -2,52 +2,174 @@ import sys
 sys.stdin = open("input.txt", "r")
 from collections import deque
 
-def bfs(color,si,sj):
-    global cnt, blind
-    RG = 0
-    if blind  and (color == 'R' or color == 'G'):
-        RG = 1
-    q = deque()
-    v[si][sj] = cnt 
-    q.append((si,sj))
-    while q:
-        ci,cj = q.popleft()
-        for di,dj in ((-1,0),(1,0),(0,-1),(0,1)):
-            ni, nj = ci + di, cj +dj
-            if 0<=ni<N and 0<=nj<N and v[ni][nj] ==0 :
-                if  blind and RG and  (arr[ni][nj] == 'R' or arr[ni][nj] == 'G') :
-                    v[ni][nj] = cnt
-                    q.append((ni,nj))
-                if blind and not RG and arr[ni][nj] == color :
-                    v[ni][nj] = cnt
-                    q.append((ni,nj))
-                if not blind and arr[ni][nj] == color:
-                    v[ni][nj] = cnt
-                    q.append((ni,nj))
-    return 
+def backtrack(row,d):
+    global ans
+    if d == n: # 행별로 바꾼 경우마다..
+        cnt = 0
+        for i in range(n):
+            h, t = 0 , 0 # h 앞면 , t 뒷면
+            for j in range(n):
+                if flip[j] == 1:   
+                    if board[j][i]==1: # 세로로 뒤집기 
+                        h += 1
+                    else:
+                        t += 1
+                else: 
+                    if board[j][i]==1:
+                        t += 1
+                    else:
+                        h += 1
+           
+            cnt += h if t>h else t  # t h 중 작은것 이 답
+        ans = min(ans,cnt)
+        return
 
-N = int(input())
-arr= [list(input()) for _ in range(N)]
-blind = False
-cnt = 0
-v=[[0]*N for _ in range(N)]
-for i in range(N):
-    for j in range(N):
-        if v[i][j] == 0:
-            cnt +=1
-            bfs(arr[i][j],i,j)
-ans1 = cnt
-blind = True
-cnt = 0
-v=[[0]*N for _ in range(N)]
-for i in range(N):
-    for j in range(N):
-        if v[i][j] == 0:
-            cnt +=1
-            bfs(arr[i][j],i,j)
-print(v)
-ans2 = cnt
-print(ans1, ans2)    
+    flip[row] = 1
+    backtrack(row+1,d+1)
+    flip[row] = 0
+    backtrack(row+1,d+1)
+
+n = int(input())
+ans = 400
+board = [list(input()) for _ in range(n)]
+for i in range(n):
+    for j in range(n):
+        if board[i][j] == 'H':
+            board[i][j] = 0
+        else:
+            board[i][j] = 1
+flip = [0] * n
+backtrack(0,0)
+print(ans)
+
+
+# # input
+# n = int(input())
+# rows = [0]*n
+# for i in range(n):
+#     coins = input().strip()
+#     for j in range(n):
+#         if coins[j] == 'T':
+#             rows[i] += (1 << j)
+   
+# # print(*rows, sep='\n') # T 를 비트 1로 해서 역순으로받음
+
+
+# # process
+# def masking(row):
+#     for i in range(n):
+#         if row & (1 << i):
+#             rows[i] ^= (1 << n) - 1
+
+# def count_val():
+#     value = 0
+#     for i in range(n):
+#         cols = 0
+#         for j in range(n):
+#             if rows[j] & (1 << i):
+#                 cols += 1
+#         value += min(cols, n - cols)
+#     return value
+
+# # 행을 뒤집는 모든 경우의 수 - 2 ** n
+# ans = n ** 2
+# for i in range(1 << n): # 0 1 2... 7 (000... 111)
+#     # 행 뒤집기
+#     masking(i)
+#     # 카운트
+#     ans = min(count_val(), ans)
+#     # 행 원복
+#     masking(i)
+# print(ans)
+
+
+
+
+
+
+
+
+
+
+# temp_A = A[:]
+# cnt = 0
+
+# # 첫 번째 스위치를 안 눌렀을 때
+# for i in range(1, N):
+#     if A[i - 1] != B[i - 1]:
+#         cnt += 1
+#         A[i] = 1- A[i]
+#         A[i - 1] = 1- A[i - 1]
+#         if i != N - 1:
+#             A[i + 1] = 1- A[i + 1]
+
+# if A == B:
+#     print(cnt)
+#     exit()
+
+# # 첫 번째 스위치를 눌렀을 때
+# cnt = 1
+# temp_A[0] = 1- temp_A[0]
+# temp_A[1] = 1- temp_A[1]
+# for i in range(1, N):
+#     if temp_A[i - 1] != B[i - 1]:
+#         cnt += 1
+#         temp_A[i] = 1- temp_A[i]
+#         temp_A[i - 1] = 1- temp_A[i - 1]
+#         if i != N - 1:
+#             temp_A[i + 1] = 1- temp_A[i + 1]
+# if temp_A == B:
+#     print(cnt)
+#     exit()
+
+# print(-1)  # 정답이 없는 경우
+
+# def bfs(color,si,sj):
+#     global cnt, blind
+#     RG = 0
+#     if blind  and (color == 'R' or color == 'G'):
+#         RG = 1
+#     q = deque()
+#     v[si][sj] = cnt 
+#     q.append((si,sj))
+#     while q:
+#         ci,cj = q.popleft()
+#         for di,dj in ((-1,0),(1,0),(0,-1),(0,1)):
+#             ni, nj = ci + di, cj +dj
+#             if 0<=ni<N and 0<=nj<N and v[ni][nj] ==0 :
+#                 if  blind and RG and  (arr[ni][nj] == 'R' or arr[ni][nj] == 'G') :
+#                     v[ni][nj] = cnt
+#                     q.append((ni,nj))
+#                 if blind and 1- RG and arr[ni][nj] == color :
+#                     v[ni][nj] = cnt
+#                     q.append((ni,nj))
+#                 if 1- blind and arr[ni][nj] == color:
+#                     v[ni][nj] = cnt
+#                     q.append((ni,nj))
+#     return 
+
+# N = int(input())
+# arr= [list(input()) for _ in range(N)]
+# blind = False
+# cnt = 0
+# v=[[0]*N for _ in range(N)]
+# for i in range(N):
+#     for j in range(N):
+#         if v[i][j] == 0:
+#             cnt +=1
+#             bfs(arr[i][j],i,j)
+# ans1 = cnt
+# blind = True
+# cnt = 0
+# v=[[0]*N for _ in range(N)]
+# for i in range(N):
+#     for j in range(N):
+#         if v[i][j] == 0:
+#             cnt +=1
+#             bfs(arr[i][j],i,j)
+# print(v)
+# ans2 = cnt
+# print(ans1, ans2)    
 
 
 
